@@ -7,7 +7,7 @@ const figures = [
   {
     width: 80,
     height: 80,
-    color: "blue",
+    color: "black",
   },
   {
     width: 10,
@@ -17,7 +17,7 @@ const figures = [
   {
     width: 60,
     height: 50,
-    color: "grey",
+    color: "red",
   },
   {
     width: 50,
@@ -28,49 +28,47 @@ const figures = [
 
 const hasColor = (color) => (figure) => figure.color === color;
 
-const isRed = hasColor("red");
-const isBlue = hasColor("blue");
-
-function reduce(cb, arr, startValue) {
-  let result = startValue;
-  arr.forEach((element) => {
-    result = cb(result, element);
-  });
-
-  return result;
+function reduce(cb, startValue) {
+  return function (arr) {
+    let result = startValue;
+    arr.forEach((element) => {
+      result = cb(result, element);
+    });
+    return result;
+  };
 }
 
-function map(cb, arr) {
-  const result = [];
-  arr.forEach((element) => {
-    result.push(cb(element));
-  });
-
-  return result;
+function map(cb) {
+  return function (arr) {
+    const result = [];
+    arr.forEach((element) => {
+      result.push(cb(element));
+    });
+    return result;
+  };
 }
 
-function filter(cb, arr) {
-  const result = [];
-  arr.forEach((element) => {
-    if (cb(element)) {
-      result.push(element);
-    }
-  });
-
-  return result;
+function filter(cb) {
+  return function (arr) {
+    const result = [];
+    arr.forEach((element) => {
+      if (cb(element)) {
+        result.push(element);
+      }
+    });
+    return result;
+  };
 }
 
-function flow(startValue, ...funcs) {
-  return funcs.reduce((res, func) => {
-    return func(res);
-  }, startValue);
+function flow(...funcs) {
+  return function (startValue) {
+    return funcs.reduce((res, func) => {
+      return func(res);
+    }, startValue);
+  };
 }
-
-const add1 = (x) => x + 1;
-const add5 = (x) => x + 5;
-const add10 = (x) => x + 10;
-
-console.log(flow(10, add1, add10, add5, add10));
 
 const and = (f1, f2) => (x) => f1(x) && f2(x);
 const or = (f1, f2) => (x) => f1(x) || f2(x);
+
+module.exports = { flow, hasColor, map, filter, reduce, figures };
