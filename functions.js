@@ -1,31 +1,3 @@
-const figures = [
-  {
-    width: 50,
-    height: 50,
-    color: "black",
-  },
-  {
-    width: 80,
-    height: 80,
-    color: "black",
-  },
-  {
-    width: 10,
-    height: 50,
-    color: "red",
-  },
-  {
-    width: 60,
-    height: 50,
-    color: "red",
-  },
-  {
-    width: 50,
-    height: 150,
-    color: "white",
-  },
-];
-
 const hasColor = (color) => (figure) => figure.color === color;
 
 function reduce(cb, startValue) {
@@ -62,23 +34,22 @@ function filter(cb) {
 
 function flow(...funcs) {
   return function (startValue) {
-    return funcs.reduce((res, func) => {
-      return func(res);
-    }, startValue);
+    return funcs.reduce((res, func) => func(res), startValue);
   };
 }
 
 function combine(...funcs) {
   return function (startValue) {
-    return funcs.reduceRight((res, func) => {
-      return func(res);
-    }, startValue);
+    return funcs.reduceRight((res, func) => func(res), startValue);
   }
 }
 
-const and = (p1, p2) => p1 && p2;
-const or = (p1, p2) => p1 || p2;
-const all = (...predicates) => reduce(and, true)(predicates);
-const any = (...predicates) => reduce(or, false)(predicates);
+const and = (f1, f2) => x => f1(x) && f2(x);
+const or = (f1, f2) => x => f1(x) || f2(x);
+const addC = p1 => p2 => p2 && p1;
+const orC = p1 => p2 => p2 || p1;
 
-module.exports = { flow, hasColor, map, filter, reduce, figures };
+const all = (...predicates) => predicates.reduce(and);
+const any = (...predicates) => predicates.reduce(or);
+
+module.exports = { flow, hasColor, map, filter, reduce };
