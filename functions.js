@@ -68,7 +68,17 @@ function flow(...funcs) {
   };
 }
 
-const and = (f1, f2) => (x) => f1(x) && f2(x);
-const or = (f1, f2) => (x) => f1(x) || f2(x);
+function combine(...funcs) {
+  return function (startValue) {
+    return funcs.reduceRight((res, func) => {
+      return func(res);
+    }, startValue);
+  }
+}
+
+const and = (p1, p2) => p1 && p2;
+const or = (p1, p2) => p1 || p2;
+const all = (...predicates) => reduce(and, true)(predicates);
+const any = (...predicates) => reduce(or, false)(predicates);
 
 module.exports = { flow, hasColor, map, filter, reduce, figures };
